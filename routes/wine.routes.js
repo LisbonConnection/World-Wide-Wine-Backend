@@ -40,7 +40,7 @@ router.post("/wines", (req, res, next) => {
 //Retrieve all wines
 router.get("/wines", (req, res, next) => {
     Wine.find()
-    .populate('review')
+    .populate('reviewAverage')
     .then( (wineFromDB) => {
         res.json(wineFromDB)
     })
@@ -54,7 +54,7 @@ router.get("/wines", (req, res, next) => {
 router.get("/wines/:wineId", (req, res, next) => {
     const {wineId} = req.params
     Wine.findById(wineId)
-    .populate('review')
+    .populate('reviewAverage')
     .then( (wineFromDB) => {
         res.status(200).json(wineFromDB)
     })

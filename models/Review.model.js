@@ -10,9 +10,9 @@ const reviewSchema = new Schema({
     },
     wine: {
         type: Schema.Types.ObjectId,
-        ref: "wine"
+        ref: "Wine"
     }
 })
 
 const Review = model("Review", reviewSchema)
-module.exports = Review
+module.exports = Review;

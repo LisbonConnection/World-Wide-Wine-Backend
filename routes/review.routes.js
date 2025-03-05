@@ -4,7 +4,7 @@ const mongoose = require("mongoose")
 
 const Review = require('../models/Review.model');
 const Wine = require("../models/Wine.model");
-const { response } = require("../app");
+
 
 
 router.post('/reviews', (req, res, next) => {
@@ -16,7 +16,7 @@ router.post('/reviews', (req, res, next) => {
     })
     .then( (reviewFromDb) => {
         return Wine.findByIdAndUpdate(wineId, {
-            $push: { reviews: reviewFromDb._id }
+            $push: { reviewAverage: reviewFromDb._id }
         }, { new: true });
     })
     .then((response) => {
