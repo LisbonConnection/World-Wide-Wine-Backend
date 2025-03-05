@@ -28,10 +28,10 @@ const wineSchema = new Schema({
         required: true
     },
 
-    reviewAverage: {
+    reviewAverage: [{
         type: Schema.Types.ObjectId,
-        ref: "Review"
-    }
+        ref: "review"
+    }]
 })
 
 const Wine = model("Wine", wineSchema)

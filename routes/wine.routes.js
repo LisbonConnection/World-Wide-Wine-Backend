@@ -3,6 +3,7 @@ const router = express.Router();
 const mongoose = require("mongoose")
 
 const Wine = require("../models/Wine.model");
+const Review = require('../models/Review.model');
 
 
 //create a wine
@@ -39,7 +40,7 @@ router.post("/wines", (req, res, next) => {
 //Retrieve all wines
 router.get("/wines", (req, res, next) => {
     Wine.find()
-    .populate('wine')
+    .populate('review')
     .then( (wineFromDB) => {
         res.json(wineFromDB)
     })
@@ -53,7 +54,7 @@ router.get("/wines", (req, res, next) => {
 router.get("/wines/:wineId", (req, res, next) => {
     const {wineId} = req.params
     Wine.findById(wineId)
-    .populate('task')
+    .populate('review')
     .then( (wineFromDB) => {
         res.status(200).json(wineFromDB)
     })
@@ -80,14 +81,15 @@ router.put('/wines/:wineId', (req, res, next) => {
 
 //Delete a specific wine 
 router.delete('/wines/:wineId', (req, res, next) => {
-    const {wineId} = req.body
+    const {wineId} = req.params
 
     Wine.findByIdAndDelete(wineId)
     .then( () => {
         res.json({message: `wine with ${wineId} deleted succesfully`})
+        console.log(wineId)
     })
     .catch((error) => {
-        console.log('Error while deleting the wine')
+        console.log('Error while deleting the wine', error)
         res.status(500).json({message: 'Error while deleting the wine'})
     })
 })

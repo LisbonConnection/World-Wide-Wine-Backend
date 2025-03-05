@@ -27,7 +27,7 @@ app.use('/', indexRoutes);
 //routes 
 app.use("/api", require("./routes/wine.routes"));
 // app.use("/api", require("./routes"));
-
+app.use('/api', require('./routes/review.routes'))
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
 require("./error-handling")(app);
 
