@@ -63,5 +63,19 @@ router.get("/wines/:wineId", (req, res, next) => {
     })
 })
 
+//Update a specific wine
+router.put('wines/:wineId', (req, res, next) => {
+    const {wineId} = req.params
+
+    Wine.findByIdAndUpdate(wineId)
+    .then( (wineFromDB) => {
+        res.status(200).json(wineFromDB)                                                                                     
+    })
+    .catch((error) => {
+        console.log('Error while updating the wine', error)
+        res.status(500).json({message: 'Error while updating the wine'})
+    })
+})
+
 
 module.exports = router;
