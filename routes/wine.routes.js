@@ -64,16 +64,31 @@ router.get("/wines/:wineId", (req, res, next) => {
 })
 
 //Update a specific wine
-router.put('wines/:wineId', (req, res, next) => {
+router.put('/wines/:wineId', (req, res, next) => {
     const {wineId} = req.params
 
-    Wine.findByIdAndUpdate(wineId)
+    Wine.findByIdAndUpdate(wineId, req.body, {new:true})
     .then( (wineFromDB) => {
         res.status(200).json(wineFromDB)                                                                                     
     })
     .catch((error) => {
         console.log('Error while updating the wine', error)
         res.status(500).json({message: 'Error while updating the wine'})
+    })
+})
+
+
+//Delete a specific wine 
+router.delete('/wines/:wineId', (req, res, next) => {
+    const {wineId} = req.body
+
+    Wine.findByIdAndDelete(wineId)
+    .then( () => {
+        res.json({message: `wine with ${wineId} deleted succesfully`})
+    })
+    .catch((error) => {
+        console.log('Error while deleting the wine')
+        res.status(500).json({message: 'Error while deleting the wine'})
     })
 })
 
