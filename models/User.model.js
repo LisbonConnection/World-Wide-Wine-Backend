@@ -1,6 +1,6 @@
 const { Schema, model } = require("mongoose");
+const bcrypt = require("bcrypt");
 
-// TODO: Please make sure you edit the User model to whatever makes sense in this case
 const userSchema = new Schema(
   {
     email: {
@@ -9,21 +9,35 @@ const userSchema = new Schema(
       unique: true,
       lowercase: true,
       trim: true,
+      match: [/^\S+@\S+\.\S+$/, "Please use a valid email address."],
     },
     password: {
       type: String,
       required: [true, "Password is required."],
+      minlength: [8, "Password needs to be at least 8 characters long."],
     },
     name: {
       type: String,
       required: [true, "Name is required."],
+      trim: true,
     },
   },
   {
-    // this second object adds extra properties: `createdAt` and `updatedAt`
     timestamps: true,
   }
 );
+
+userSchema.pre("save", function (next) {
+  const user = this;
+  if (user.isModified("password")) {
+    bcrypt.hash(user.password, 10).then((hash) => {
+      user.password = hash;
+      next();
+    });
+  } else {
+    next();
+  }
+});
 
 const User = model("User", userSchema);
 
