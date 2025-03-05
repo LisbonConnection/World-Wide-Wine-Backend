@@ -36,5 +36,18 @@ router.post("/wines", (req, res, next) => {
     })
 })
 
+//Retrieve all wines
+router.get("/wines", (req, res, next) => {
+    Wine.find()
+    .populate('wine')
+    .then( (wineFromDB) => {
+        res.json(wineFromDB)
+    })
+    .catch( (error) => {
+        console.log('Error while getting the wines', error)
+        res.status(500).json({message: 'Error while getting the wines'})
+    })
+})
+
 
 module.exports = router;
