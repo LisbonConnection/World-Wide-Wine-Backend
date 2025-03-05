@@ -6,7 +6,6 @@ const Review = require('../models/Review.model');
 const Wine = require("../models/Wine.model");
 
 
-
 router.post('/reviews', (req, res, next) => {
     const {rating, wineId} = req.body;
 

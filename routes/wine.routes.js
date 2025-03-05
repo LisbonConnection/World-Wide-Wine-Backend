@@ -2,12 +2,15 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose")
 
+const { isAuthenticated } = require("../middleware/jwt.middleware");
+
 const Wine = require("../models/Wine.model");
 const Review = require('../models/Review.model');
 
 
+
 //create a wine
-router.post("/wines", (req, res, next) => { 
+router.post("/wines", isAuthenticated, (req, res, next) => { 
 
     const { 
         wineName,
@@ -53,6 +56,12 @@ router.get("/wines", (req, res, next) => {
 //Retrieve a specific wine
 router.get("/wines/:wineId", (req, res, next) => {
     const {wineId} = req.params
+
+    if (!mongoose.Types.ObjectId.isValid(wineId)) {
+        res.status(400).json({ message: "Specified id is not valid" });
+        return;
+      }
+
     Wine.findById(wineId)
     .populate('reviewAverage')
     .then( (wineFromDB) => {
@@ -65,8 +74,13 @@ router.get("/wines/:wineId", (req, res, next) => {
 })
 
 //Update a specific wine
-router.put('/wines/:wineId', (req, res, next) => {
+router.put('/wines/:wineId', isAuthenticated, (req, res, next) => {
     const {wineId} = req.params
+
+    if (!mongoose.Types.ObjectId.isValid(wineId)) {
+        res.status(400).json({ message: "Specified id is not valid" });
+        return;
+      }
 
     Wine.findByIdAndUpdate(wineId, req.body, {new:true})
     .then( (wineFromDB) => {
@@ -80,8 +94,13 @@ router.put('/wines/:wineId', (req, res, next) => {
 
 
 //Delete a specific wine 
-router.delete('/wines/:wineId', (req, res, next) => {
+router.delete('/wines/:wineId', isAuthenticated, (req, res, next) => {
     const {wineId} = req.params
+
+    if (!mongoose.Types.ObjectId.isValid(wineId)) {
+        res.status(400).json({ message: "Specified id is not valid" });
+        return;
+      }
 
     Wine.findByIdAndDelete(wineId)
     .then( () => {
