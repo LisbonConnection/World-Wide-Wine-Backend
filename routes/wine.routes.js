@@ -49,5 +49,19 @@ router.get("/wines", (req, res, next) => {
     })
 })
 
+//Retrieve a specific wine
+router.get("/wines/:wineId", (req, res, next) => {
+    const {wineId} = req.params
+    Wine.findById(wineId)
+    .populate('task')
+    .then( (wineFromDB) => {
+        res.status(200).json(wineFromDB)
+    })
+    .catch((error) => {
+        console.log('Error retrieving the wine', error)
+        res.status(500).json({message: 'Error retrieving the wine'})
+    })
+})
+
 
 module.exports = router;
