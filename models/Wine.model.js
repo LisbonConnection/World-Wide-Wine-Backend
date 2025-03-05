@@ -20,7 +20,10 @@ const wineSchema = new Schema({
         required: true,
     },
     price: {
-        type: Number
+        type: Number,
+        min: 1,
+        max: 500,
+        required: true,
     },
 
     description: {
@@ -31,7 +34,12 @@ const wineSchema = new Schema({
     reviewAverage: [{
         type: Schema.Types.ObjectId,
         ref: "Review"
-    }]
+    }],
+
+    ratingAverage: {
+        type: Number,
+        default: 0
+    }
 })
 
 const Wine = model("Wine", wineSchema)
