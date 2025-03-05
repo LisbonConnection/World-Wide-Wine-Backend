@@ -2,11 +2,13 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose")
 
+const { isAuthenticated } = require("../middleware/jwt.middleware");
+
 const Review = require('../models/Review.model');
 const Wine = require("../models/Wine.model");
 
 
-router.post('/reviews', (req, res, next) => {
+router.post('/reviews', isAuthenticated, (req, res, next) => {
     const {rating, wineId} = req.body;
 
     Review.create({
