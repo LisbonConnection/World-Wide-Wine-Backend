@@ -1,26 +1,41 @@
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose")
-
+const fs = require('fs');
+const multer = require('multer');
+const path = require('path');
+const app = express();
 const { isAuthenticated } = require("../middleware/jwt.middleware");
 
 const Wine = require("../models/Wine.model");
 const Review = require('../models/Review.model');
 
-
+ // Specify the folder for uploads
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, path.join(__dirname, "uploads")); 
+    },
+    filename: (req, file, cb) => {
+      cb(null, Date.now() + path.extname(file.originalname)); 
+    }
+  });
+  const upload = multer({ storage: storage });
+  
 
 //create a wine
-router.post("/wines", isAuthenticated, (req, res, next) => { 
+router.post("/wines", isAuthenticated,  upload.single('image'), (req, res, next) => { 
 
     const { 
         wineName,
         varietalName,
-        image,
+        // image,
         region,
         price,
         description,
         reviewAverage
     } = req.body;
+
+    const image = req.file ? `/uploads/${req.file.filename}` : null;
 
     Wine.create({
         wineName,
