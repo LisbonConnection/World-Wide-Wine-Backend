@@ -7,11 +7,9 @@ require("./db");
 const path = require("path");
 const cors = require("cors");
 
-
 // Handles http requests (express is node js framework)
 // https://www.npmjs.com/package/express
 const express = require("express");
-
 
 const app = express();
 
@@ -29,9 +27,11 @@ const authRoutes = require("./routes/auth.routes");
 app.use("/auth", authRoutes);
 
 //routes
-app.use("/api", require("./routes/wine.routes"));
+const wineRoutes = require("./routes/wine.routes");
+app.use("/api/wines", wineRoutes);
+
 // app.use("/api", require("./routes"));
-app.use('/api', require('./routes/review.routes'))
+app.use("/api", require("./routes/review.routes"));
 
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
 require("./error-handling")(app);
