@@ -22,44 +22,39 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 //create a wine
-router.post(
-  "/wines",
-  isAuthenticated,
-  upload.single("image"),
-  (req, res, next) => {
-    const {
-      wineName,
-      varietalName,
-      // image,
-      region,
-      price,
-      description,
-      reviewAverage,
-    } = req.body;
+router.post("/", isAuthenticated, upload.single("image"), (req, res, next) => {
+  const {
+    wineName,
+    varietalName,
+    // image,
+    region,
+    price,
+    description,
+    reviewAverage,
+  } = req.body;
 
-    const image = req.file ? `/uploads/${req.file.filename}` : null;
+  const image = req.file ? `/uploads/${req.file.filename}` : null;
 
-    Wine.create({
-      wineName,
-      varietalName,
-      image,
-      region,
-      price,
-      description,
-      reviewAverage,
+  Wine.create({
+    wineName,
+    varietalName,
+    image,
+    region,
+    price,
+    description,
+    reviewAverage,
+  })
+    .then((wineFromDB) => {
+      res.status(201).json(wineFromDB);
     })
-      .then((wineFromDB) => {
-        res.status(201).json(wineFromDB);
-      })
-      .catch((error) => {
-        console.log("Error while creating the wine", error);
-        res.status(500).json({ message: "Error while creating the wine" });
-      });
-  }
-);
+    .catch((error) => {
+      console.log("Error while creating the wine", error);
+      res.status(500).json({ message: "Error while creating the wine" });
+    });
+});
 
 //Retrieve all wines
-router.get("/wines", (req, res, next) => {
+router.get("/", (req, res, next) => {
   Wine.find()
     .populate("reviewAverage")
     .then((wineFromDB) => {
@@ -71,8 +66,32 @@ router.get("/wines", (req, res, next) => {
     });
 });
 
+//search wine
+router.get("/search", isAuthenticated, (req, res) => {
+  const { text } = req.query;
+
+  console.log("query:", req.query);
+  if (!text || text.trim() === "") {
+    return res.status(400).json({ message: "Search query is required" });
+  }
+
+  Wine.find({
+    wineName: { $regex: text, $options: "i" },
+  })
+    .then((wines) => {
+      if (wines.length === 0) {
+        return res.status(404).json({ message: "No wines found" });
+      }
+      res.status(200).json(wines);
+    })
+    .catch((error) => {
+      console.error("Error searching for wines:", error);
+      res.status(500).json({ message: "Error searching for wines" });
+    });
+});
+
 //Retrieve a specific wine
-router.get("/wines/:wineId", (req, res, next) => {
+router.get("/:wineId", (req, res, next) => {
   const { wineId } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(wineId)) {
@@ -91,31 +110,8 @@ router.get("/wines/:wineId", (req, res, next) => {
     });
 });
 
-//search wine
-router.get("/wines/search", isAuthenticated, (req, res) => {
-  const { query } = req.query;
-
-  if (!query || query.trim() === "") {
-    return res.status(400).json({ message: "Search query is required" });
-  }
-
-  Wine.find({
-    wineName: { $regex: query, $options: "i" },
-  })
-    .then((wines) => {
-      if (wines.length === 0) {
-        return res.status(404).json({ message: "No wines found" });
-      }
-      res.status(200).json(wines);
-    })
-    .catch((error) => {
-      console.error("Error searching for wines:", error);
-      res.status(500).json({ message: "Error searching for wines" });
-    });
-});
-
 //Update a specific wine
-router.put("/wines/:wineId", isAuthenticated, (req, res, next) => {
+router.put("/:wineId", isAuthenticated, (req, res, next) => {
   const { wineId } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(wineId)) {
@@ -134,7 +130,7 @@ router.put("/wines/:wineId", isAuthenticated, (req, res, next) => {
 });
 
 //Delete a specific wine
-router.delete("/wines/:wineId", isAuthenticated, (req, res, next) => {
+router.delete("/:wineId", isAuthenticated, (req, res, next) => {
   const { wineId } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(wineId)) {
